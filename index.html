@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PlásticoZero — Educação futurista sobre descarte correto, reciclagem e impacto ambiental do plástico." />
+  <title>PlásticoZero | Futuro Sem Plástico</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neon:  { green: '#00ffa3', cyan: '#00e5ff', purple: '#a855f7', pink: '#ff2e97' },
+            dark:  { 900: '#030712', 800: '#0a0f1e', 700: '#111827', 600: '#1f2937' },
+          },
+          fontFamily: {
+            display: ['"Orbitron"', 'sans-serif'],
+            body:    ['"Inter"', 'sans-serif'],
+            mono:    ['"JetBrains Mono"', 'monospace'],
+          },
+          animation: {
+            'float':       'float 6s ease-in-out infinite',
+            'float-slow':  'float 9s ease-in-out infinite',
+            'pulse-neon':  'pulseNeon 2.5s ease-in-out infinite',
+            'scan':        'scan 4s linear infinite',
+            'spin-slow':   'spin 18s linear infinite',
+          },
+          keyframes: {
+            float: {
+              '0%,100%': { transform: 'translateY(0)' },
+              '50%':     { transform: 'translateY(-14px)' },
+            },
+            pulseNeon: {
+              '0%,100%': { boxShadow: '0 0 10px #00ffa3, 0 0 24px #00ffa3' },
+              '50%':     { boxShadow: '0 0 24px #00ffa3, 0 0 60px #00ffa3' },
+            },
+            scan: {
+              '0%':   { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(100vh)' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="font-body bg-dark-900 text-slate-200 antialiased overflow-x-hidden">
+
+  <!-- Canvas de partículas de fundo -->
+  <canvas id="particles" class="fixed inset-0 -z-10"></canvas>
+
+  <!-- Grid decorativo -->
+  <div class="grid-bg fixed inset-0 -z-10 pointer-events-none"></div>
+
+  <!-- Linha de scan animada -->
+  <div class="scan-line fixed inset-x-0 -z-10 pointer-events-none"></div>
+
+  <!-- ================= HEADER ================= -->
+  <header id="header" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-20">
+      <!-- Logo -->
+      <a href="#inicio" class="flex items-center gap-3 group">
+        <div class="relative w-11 h-11 rounded-xl bg-gradient-to-br from-neon-green to-neon-cyan flex items-center justify-center pulse-neon">
+          <i data-lucide="hexagon" class="w-6 h-6 text-dark-900"></i>
+          <span class="absolute inset-0 rounded-xl border border-neon-green/40 animate-ping"></span>
+        </div>
+        <span class="font-display font-black text-xl tracking-widest text-white">
+          PLÁSTICO<span class="text-neon-green">ZERO</span>
+        </span>
+      </a>
+
+      <!-- Nav desktop -->
+      <nav class="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-widest">
+        <a href="#inicio" class="nav-link">// Início</a>
+        <a href="#problema" class="nav-link">// Problema</a>
+        <a href="#tipos" class="nav-link">// Tipos</a>
+        <a href="#descarte" class="nav-link">// Descarte</a>
+        <a href="#habitos" class="nav-link">// Hábitos</a>
+        <a href="#contato" class="nav-link">// Contato</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="#descarte" class="btn-neon hidden sm:inline-flex">
+          <span>ATIVAR MISSÃO</span>
+        </a>
+        <button id="menu-btn" class="md:hidden w-10 h-10 rounded-lg border border-neon-cyan/40 flex items-center justify-center text-neon-cyan" aria-label="Abrir menu">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Menu mobile -->
+    <div id="mobile-menu" class="md:hidden hidden glass-strong border-t border-neon-green/20">
+      <nav class="flex flex-col p-6 gap-4 font-mono text-sm uppercase tracking-widest">
+        <a href="#inicio" class="mobile-link">// Início</a>
+        <a href="#problema" class="mobile-link">// Problema</a>
+        <a href="#tipos" class="mobile-link">// Tipos</a>
+        <a href="#descarte" class="mobile-link">// Descarte</a>
+        <a href="#habitos" class="mobile-link">// Hábitos</a>
+        <a href="#contato" class="mobile-link">// Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section id="inicio" class="relative min-h-screen flex items-center pt-24 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center py-16">
+
+      <div class="reveal">
+        <span class="inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-widest text-neon-green border border-neon-green/30">
+          <span class="w-2 h-2 rounded-full bg-neon-green animate-pulse"></span>
+          SISTEMA ONLINE · EDUCAÇÃO AMBIENTAL
+        </span>
+
+        <h1 class="mt-6 font-display font-black text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-white">
+          O PLANETA<br/>
+          NÃO É <span class="text-glow-green">DESCARTÁVEL.</span>
+        </h1>
+
+        <p class="mt-6 text-lg text-slate-400 max-w-xl leading-relaxed">
+          Ative o modo consciente. Descubra como pequenas mudanças no descarte e nos hábitos podem
+          remover <strong class="text-neon-cyan">milhões de toneladas de plástico</strong> dos oceanos. Aprenda. Recicle. Transforme.
+        </p>
+
+        <div class="mt-10 flex flex-wrap gap-4">
+          <a href="#descarte" class="btn-neon">
+            <i data-lucide="recycle" class="w-5 h-5"></i>
+            <span>INICIAR RECICLAGEM</span>
+          </a>
+          <a href="#problema" class="btn-ghost-neon">
+            <i data-lucide="activity" class="w-5 h-5"></i>
+            <span>VER IMPACTO</span>
+          </a>
+        </div>
+
+        <!-- Mini stats HUD -->
+        <div class="mt-12 grid grid-cols-3 gap-4 max-w-lg">
+          <div class="glass p-3 rounded-xl border border-neon-green/20">
+            <div class="font-display font-black text-xl text-neon-green" data-counter="450">0</div>
+            <p class="text-[10px] text-slate-500 font-mono uppercase mt-1">anos decomposição</p>
+          </div>
+          <div class="glass p-3 rounded-xl border border-neon-cyan/20">
+            <div class="font-display font-black text-xl text-neon-cyan" data-counter="11">0</div>
+            <p class="text-[10px] text-slate-500 font-mono uppercase mt-1">mi t. / ano oceano</p>
+          </div>
+          <div class="glass p-3 rounded-xl border border-neon-purple/20">
+            <div class="font-display font-black text-xl text-neon-purple" data-counter="90">0</div>
+            <p class="text-[10px] text-slate-500 font-mono uppercase mt-1">% aves afetadas</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Holograma -->
+      <div class="relative reveal">
+        <div class="relative w-full aspect-square max-w-lg mx-auto">
+          <!-- Anéis orbitais -->
+          <div class="absolute inset-0 rounded-full border border-neon-green/20 animate-spin-slow"></div>
+          <div class="absolute inset-6 rounded-full border border-neon-cyan/20 animate-spin-slow" style="animation-direction: reverse;"></div>
+          <div class="absolute inset-12 rounded-full border border-neon-purple/20 animate-spin-slow"></div>
+
+          <!-- Núcleo holográfico -->
+          <div class="absolute inset-20 rounded-full glass-strong flex flex-col items-center justify-center border border-neon-green/40 pulse-neon">
+            <i data-lucide="globe" class="w-16 h-16 text-neon-green animate-float"></i>
+            <p class="mt-4 font-display font-bold text-sm text-white tracking-widest">ECO-SYSTEM</p>
+            <p class="mt-1 font-mono text-[10px] text-neon-cyan">STATUS: ATIVO</p>
+          </div>
+
+          <!-- Etiquetas flutuantes -->
+          <div class="absolute top-4 left-0 glass px-3 py-2 rounded-lg border border-neon-cyan/30 flex items-center gap-2 animate-float-slow">
+            <i data-lucide="recycle" class="w-4 h-4 text-neon-cyan"></i>
+            <span class="text-xs font-mono text-neon-cyan">RECICLAGEM</span>
+          </div>
+          <div class="absolute bottom-8 right-0 glass px-3 py-2 rounded-lg border border-neon-green/30 flex items-center gap-2 animate-float">
+            <i data-lucide="droplets" class="w-4 h-4 text-neon-green"></i>
+            <span class="text-xs font-mono text-neon-green">OCEANOS</span>
+          </div>
+          <div class="absolute top-1/2 -right-4 glass px-3 py-2 rounded-lg border border-neon-purple/30 flex items-center gap-2 animate-float-slow">
+            <i data-lucide="leaf" class="w-4 h-4 text-neon-purple"></i>
+            <span class="text-xs font-mono text-neon-purple">FUTURO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= O PROBLEMA ================= -->
+  <section id="problema" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mx-auto text-center reveal">
+        <span class="section-tag">// 01 · O PROBLEMA</span>
+        <h2 class="mt-4 font-display font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight text-white">
+          O IMPACTO <span class="text-glow-cyan">INVISÍVEL</span>
+        </h2>
+        <p class="mt-5 text-slate-400 text-lg">
+          O plástico não desaparece — ele se transforma. Volta para a cadeia alimentar, para a água
+          que bebemos e para o ar que respiramos. Os dados são um alerta.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+        <article class="hud-card reveal">
+          <div class="hud-icon text-neon-green"><i data-lucide="clock" class="w-6 h-6"></i></div>
+          <h3 class="hud-number text-neon-green" data-counter="450">0</h3>
+          <p class="hud-label">anos p/ decompor uma garrafa PET</p>
+        </article>
+        <article class="hud-card reveal">
+          <div class="hud-icon text-neon-cyan"><i data-lucide="fish" class="w-6 h-6"></i></div>
+          <h3 class="hud-number text-neon-cyan" data-counter="11">0</h3>
+          <p class="hud-label">milhões de t. chegam ao oceano/ano</p>
+        </article>
+        <article class="hud-card reveal">
+          <div class="hud-icon text-neon-purple"><i data-lucide="microscope" class="w-6 h-6"></i></div>
+          <h3 class="hud-number text-neon-purple" data-counter="5">0</h3>
+          <p class="hud-label">gramas de microplástico por semana</p>
+        </article>
+        <article class="hud-card reveal">
+          <div class="hud-icon text-neon-pink"><i data-lucide="bird" class="w-6 h-6"></i></div>
+          <h3 class="hud-number text-neon-pink" data-counter="90">0</h3>
+          <p class="hud-label">% das aves marinhas afetadas</p>
+        </article>
+      </div>
+
+      <div class="mt-16 grid lg:grid-cols-2 gap-8 items-center">
+        <div class="reveal">
+          <h3 class="font-display font-bold text-2xl text-white">MICROPLÁSTICOS: AMEAÇA INVISÍVEL</h3>
+          <p class="mt-4 text-slate-400 leading-relaxed">
+            Quando o plástico se fragmenta, ele vira <strong class="text-neon-cyan">microplástico</strong> —
+            partículas menores que 5 mm que entram na cadeia alimentar. Já foram encontradas em água
+            potável, sal, peixes e até no sangue humano.
+          </p>
+          <ul class="mt-6 space-y-3">
+            <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-neon-green mt-0.5"></i> <span class="text-slate-300">Afetam o sistema hormonal e respiratório.</span></li>
+            <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-neon-green mt-0.5"></i> <span class="text-slate-300">Levam séculos para se degradar por completo.</span></li>
+            <li class="flex items-start gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-neon-green mt-0.5"></i> <span class="text-slate-300">São extremamente difíceis de remover do meio ambiente.</span></li>
+          </ul>
+        </div>
+
+        <div class="reveal glass-strong rounded-3xl p-10 border border-neon-cyan/30 relative overflow-hidden">
+          <div class="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-neon-cyan/20 blur-3xl"></div>
+          <i data-lucide="quote" class="w-10 h-10 text-neon-cyan/50"></i>
+          <p class="mt-4 text-2xl font-display font-semibold leading-snug text-white">
+            “Não existe ‘jogar fora’. O ‘fora’ é o oceano, é o solo, é o pulmão do planeta.”
+          </p>
+          <p class="mt-6 text-slate-500 text-sm font-mono">// CONSCIENTIZAÇÃO AMBIENTAL</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TIPOS ================= -->
+  <section id="tipos" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mx-auto text-center reveal">
+        <span class="section-tag">// 02 · GUIA PRÁTICO</span>
+        <h2 class="mt-4 font-display font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight text-white">
+          OS <span class="text-glow-purple">7 TIPOS</span> DE PLÁSTICO
+        </h2>
+        <p class="mt-5 text-slate-400 text-lg">
+          Cada plástico tem um número e um símbolo. Identificá-los é o primeiro passo para descartar corretamente.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
+        <article class="plastic-card reveal">
+          <div class="flex items-start justify-between">
+            <span class="plastic-badge badge-green">01 · PET</span>
+            <i data-lucide="recycle" class="w-5 h-5 text-neon-green"></i>
+          </div>
+          <p class="font-semibold mt-3 text-white">Politereftalato de etileno</p>
+          <p class="text-sm text-slate-400 mt-2">Garrafas de água, refrigerantes, frascos de shampoo.</p>
+          <p class="text-xs mt-4 font-mono text-neon-green">✅ AMPLAMENTE RECICLÁVEL</p>
+        </article>
+
+        <article class="plastic-card reveal">
+          <div class="flex items-start justify-between">
+            <span class="plastic-badge badge-green">02 · PEAD</span>
+            <i data-lucide="recycle" class="w-5 h-5 text-neon-green"></i>
+          </div>
+          <p class="font-semibold mt-3 text-white">Polietileno de alta densidade</p>
+          <p class="text-sm text-slate-400 mt-2">Galões de detergente, embalagens de leite, brinquedos.</p>
+          <p class="text-xs mt-4 font-mono text-neon-green">✅ AMPLAMENTE RECICLÁVEL</p>
+        </article>
+
+        <article class="plastic-card reveal">
+          <div class="flex items-start justify-between">
+            <span class="plastic-badge badge-amber">03 · PVC</span>
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400"></i>
+          </div>
+          <p class="font-semibold mt-3 text-white">Policloreto de vinila</p>
+          <p class="text-sm text-slate-400 mt-2">Tubos, forros, cortinas de banheiro, mangueiras.</p>
+          <p class="text-xs mt-4 font-mono text-amber-400">⚠️ DIFÍCIL RECICLAGEM</p>
+        </article>
+
+        <article class="plastic-card reveal">
+          <div class="flex items-start justify-between">
+            <span class="plastic-badge badge-green">04 · PEBD</span>
+            <i data-lucide="recycle" class="w-5 h-5 text-neon-green"></i>
+          </div>
+          <p class="font-semibold mt-3 text-white">Polietileno de baixa densidade</p>
+          <p class="text-sm text-slate-400 mt-2">Sacolas plásticas, filmes, embalagens flexíveis.</p>
+          <p class="text-xs mt-4 font-mono text-neon-green">✅ RECICLÁVEL (COM CUIDADO)</p>
+        </article>
+
+        <article class="plastic-card reveal">
+          <div class="flex items-start justify-between">
+            <span class="plastic-badge badge-green">05 · PP</span>
+            <i data-lucide="recycle" class="w-5 h-5 text-neon-green"></i>
+          </div>
+          <p class="font-semibold mt-3 text-white">Polipropileno</p>
+          <p class="text-sm text-slate-400 mt-2">Potes de alimentos, tampinhas, canudos reutilizáveis.</p>
+          <p class="text-xs mt-4 font-mono text-neon-green">✅ RECICLÁVEL</p>
+        </article>
+
+        <article class="plastic-card reveal">
+          <div class="flex items-start justify-between">
+            <span class="plastic-badge badge-amber">06 · PS</span>
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400"></i>
+          </div>
+          <p class="font-semibold mt-3 text-white">Poliestireno</p>
+          <p class="text-sm text-slate-400 mt-2">Copos descartáveis, isopor, bandejas de carne.</p>
+          <p class="text-xs mt-4 font-mono text-amber-400">⚠️ BAIXA RECICLAGEM</p>
+        </article>
+
+        <article class="plastic-card reveal lg:col-span-3">
+          <div class="flex items-start justify-between">
+            <span class="plastic-badge badge-red">07 · OUTROS</span>
+            <i data-lucide="alert-octagon" class="w-5 h-5 text-rose-400"></i>
+          </div>
+          <p class="font-semibold mt-3 text-white">Policarbonato, ABS, PLA e misturas</p>
+          <p class="text-sm text-slate-400 mt-2">Eletrônicos, garrafas térmicas, peças técnicas.</p>
+          <p class="text-xs mt-4 font-mono text-rose-400">❌ RECICLAGEM COMPLEXA</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DESCARTE ================= -->
+  <section id="descarte" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mx-auto text-center reveal">
+        <span class="section-tag">// 03 · PROTOCOLO</span>
+        <h2 class="mt-4 font-display font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight text-white">
+          COMO DESCARTAR <span class="text-glow-green">DO JEITO CERTO</span>
+        </h2>
+        <p class="mt-5 text-slate-400 text-lg">
+          Separar não basta: o descarte correto começa em casa. Siga estes protocolos.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 mt-16">
+        <div class="step-card reveal">
+          <div class="step-num">01</div>
+          <h3 class="mt-4 font-display font-bold text-lg text-white">HIGIENIZE</h3>
+          <p class="mt-2 text-sm text-slate-400">Enxágue embalagens com restos de comida ou líquidos. Evita mau cheiro e contaminação.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">02</div>
+          <h3 class="mt-4 font-display font-bold text-lg text-white">SEPARE O SECO</h3>
+          <p class="mt-2 text-sm text-slate-400">Dois sacos: um para recicláveis secos (papel, plástico, metal) e outro para orgânicos.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">03</div>
+          <h3 class="mt-4 font-display font-bold text-lg text-white">MANTENHA TAMPINHAS</h3>
+          <p class="mt-2 text-sm text-slate-400">Não amasse tampinhas nem as remova. Elas são recicláveis e valiosas.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">04</div>
+          <h3 class="mt-4 font-display font-bold text-lg text-white">REDUZA VOLUME</h3>
+          <p class="mt-2 text-sm text-slate-400">Amasse levemente garrafas e caixas para otimizar espaço — sem esmagar tampinhas.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">05</div>
+          <h3 class="mt-4 font-display font-bold text-lg text-white">NÃO ENSAQUE PLÁSTICO</h3>
+          <p class="mt-2 text-sm text-slate-400">Sacolas plásticas vão em pontos de coleta específicos. Não misture com recicláveis.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">06</div>
+          <h3 class="mt-4 font-display font-bold text-lg text-white">CONFIRA A COLETA</h3>
+          <p class="mt-2 text-sm text-slate-400">Consulte a prefeitura ou cooperativas para os dias e pontos de coleta seletiva.</p>
+        </div>
+      </div>
+
+      <!-- Terminal interativo -->
+      <div class="mt-20 max-w-3xl mx-auto reveal">
+        <div class="terminal">
+          <div class="terminal-bar">
+            <span class="dot bg-rose-500"></span>
+            <span class="dot bg-amber-400"></span>
+            <span class="dot bg-neon-green"></span>
+            <span class="ml-4 font-mono text-xs text-slate-500">plasticozero@terminal:~$</span>
+          </div>
+          <div class="p-6 sm:p-8">
+            <p class="font-mono text-sm text-neon-green">&gt; Digite um item para consultar descarte:</p>
+            <div class="mt-4 flex flex-col sm:flex-row gap-3">
+              <input id="quiz-input" type="text" placeholder="garrafa pet, isopor, sacola..."
+                class="terminal-input flex-1" autocomplete="off" />
+              <button id="quiz-btn" class="btn-neon justify-center">
+                <i data-lucide="search" class="w-4 h-4"></i>
+                <span>CONSULTAR</span>
+              </button>
+            </div>
+            <div id="quiz-result" class="mt-6 hidden"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HÁBITOS ================= -->
+  <section id="habitos" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="max-w-3xl mx-auto text-center reveal">
+        <span class="section-tag">// 04 · SOLUÇÕES</span>
+        <h2 class="mt-4 font-display font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight text-white">
+          MUDE SEUS HÁBITOS, <span class="text-glow-green">MUDE O MUNDO</span>
+        </h2>
+        <p class="mt-5 text-slate-400 text-lg">
+          Você não precisa ser perfeito — precisa ser consciente. Comece com uma troca por vez.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
+        <div class="habit-card reveal">
+          <div class="habit-icon text-neon-green"><i data-lucide="cup-soda" class="w-6 h-6"></i></div>
+          <h3 class="font-display font-bold text-lg mt-4 text-white">CANUDO REUTILIZÁVEL</h3>
+          <p class="text-sm text-slate-400 mt-2">Substitua canudos plásticos por versões de inox, vidro ou bambu.</p>
+        </div>
+        <div class="habit-card reveal">
+          <div class="habit-icon text-neon-cyan"><i data-lucide="shopping-bag" class="w-6 h-6"></i></div>
+          <h3 class="font-display font-bold text-lg mt-4 text-white">SACOLA RETORNÁVEL</h3>
+          <p class="text-sm text-slate-400 mt-2">Uma sacola plástica leva 400 anos para se decompor. Leve a sua.</p>
+        </div>
+        <div class="habit-card reveal">
+          <div class="habit-icon text-neon-purple"><i data-lucide="bottle" class="w-6 h-6"></i></div>
+          <h3 class="font-display font-bold text-lg mt-4 text-white">GARRAFA REUTILIZÁVEL</h3>
+          <p class="text-sm text-slate-400 mt-2">Troque garrafinhas descartáveis por versão térmica ou de inox.</p>
+        </div>
+        <div class="habit-card reveal">
+          <div class="habit-icon text-neon-cyan"><i data-lucide="coffee" class="w-6 h-6"></i></div>
+          <h3 class="font-display font-bold text-lg mt-4 text-white">COPO TÉRMICO</h3>
+          <p class="text-sm text-slate-400 mt-2">Leve seu copo para o café diário. Evite descartáveis.</p>
+        </div>
+        <div class="habit-card reveal">
+          <div class="habit-icon text-neon-green"><i data-lucide="package" class="w-6 h-6"></i></div>
+          <h3 class="font-display font-bold text-lg mt-4 text-white">COMPRE A GRANEL</h3>
+          <p class="text-sm text-slate-400 mt-2">Prefira produtos a granel e embalagens de papel ou vidro.</p>
+        </div>
+        <div class="habit-card reveal">
+          <div class="habit-icon text-neon-pink"><i data-lucide="wrench" class="w-6 h-6"></i></div>
+          <h3 class="font-display font-bold text-lg mt-4 text-white">CONSERTE ANTES DE TROCAR</h3>
+          <p class="text-sm text-slate-400 mt-2">Dar vida nova a objetos reduz a demanda por novos plásticos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA FINAL ================= -->
+  <section class="py-24 relative overflow-hidden">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-br from-neon-green/10 via-neon-cyan/10 to-neon-purple/10"></div>
+    <div class="max-w-4xl mx-auto px-6 text-center reveal">
+      <i data-lucide="earth" class="w-16 h-16 mx-auto text-neon-green animate-float"></i>
+      <h2 class="mt-6 font-display font-black text-3xl sm:text-4xl lg:text-5xl tracking-tight text-white">
+        SUA PRÓXIMA ESCOLHA PODE <span class="text-glow-green">MUDAR O FUTURO.</span>
+      </h2>
+      <p class="mt-4 text-slate-400 text-lg max-w-2xl mx-auto">
+        Compartilhe, adote um hábito sustentável e ensine alguém hoje. O planeta agradece.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="#descarte" class="btn-neon">
+          <i data-lucide="recycle" class="w-5 h-5"></i>
+          <span>REVER PROTOCOLO</span>
+        </a>
+        <a href="#contato" class="btn-ghost-neon">
+          <i data-lucide="mail" class="w-5 h-5"></i>
+          <span>FALAR COM A EQUIPE</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer id="contato" class="relative border-t border-neon-green/10 bg-dark-900/80 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-2">
+        <a href="#inicio" class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-green to-neon-cyan flex items-center justify-center">
+            <i data-lucide="hexagon" class="w-6 h-6 text-dark-900"></i>
+          </div>
+          <span class="font-display font-black text-xl tracking-widest text-white">PLÁSTICO<span class="text-neon-green">ZERO</span></span>
+        </a>
+        <p class="mt-4 text-sm text-slate-500 max-w-md leading-relaxed">
+          Um projeto educativo para conscientizar sobre o descarte correto do plástico e inspirar
+          mudanças reais de hábito. Pequenas atitudes transformam o planeta.
+        </p>
+        <div class="mt-6 flex gap-3">
+          <a href="#" class="social-btn"><i data-lucide
